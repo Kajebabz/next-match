@@ -1,8 +1,8 @@
 'use client';
 
-import { transformImageUrl } from '@/lib/util';
+import PresenceAvatar from '@/components/PresenceAvatar';
+import { timeAgo, transformImageUrl } from '@/lib/util';
 import { MessageDto } from '@/types'
-import { Avatar } from '@nextui-org/react';
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react'
 
@@ -16,16 +16,17 @@ export default function MessageBox({ message, currentUserId }: Props) {
     const messageEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (messageEndRef.current) messageEndRef.current.scrollIntoView({behavior: 'smooth'})
+        if (messageEndRef.current) messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }, [messageEndRef])
-    
+
 
     const renderAvatar = () => (
-        <Avatar
-            name={message.senderName}
-            className='self-end'
-            src={transformImageUrl(message.senderImage) || 'images/user.png'}
-        />
+        <div className='self-end'>
+            <PresenceAvatar
+                src={transformImageUrl(message.senderImage) || 'images/user.png'}
+                userId={message.senderId}
+            />
+        </div>
     )
 
     const messageContentClasses = clsx(
@@ -41,7 +42,7 @@ export default function MessageBox({ message, currentUserId }: Props) {
             'justify-between': isCurrentUserSender
         })}>
             {message.dateRead && message.recipientId !== currentUserId ? (
-                <span className='text-xs text-black text-italic'>(Read 4 mins ago)</span>
+                <span className='text-xs text-black text-italic'>(Read {timeAgo(message.dateRead)})</span>
             ) : <div></div>}
             <div className='flex'>
                 <span className='text-sm font-semibold text-gray-900'>{message.senderName}</span>
