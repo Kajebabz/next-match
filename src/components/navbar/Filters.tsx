@@ -1,70 +1,29 @@
 'use client';
 
-import { Button, Select, SelectItem, Slider, Selection } from '@nextui-org/react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import React from 'react'
-import { FaFemale, FaMale } from 'react-icons/fa'
+import { useFilters } from '@/hooks/useFilters';
+import { Button, Select, SelectItem, Slider, Spinner, Switch } from '@nextui-org/react';
 
 export default function Filters() {
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const router = useRouter();
-
-    const orderByList = [
-        { label: 'Last active', value: 'updated' },
-        { label: 'Newest members', value: 'created' },
-    ]
-
-    const genders = [
-        { value: 'male', icon: FaMale },
-        { value: 'female', icon: FaFemale },
-    ]
-
-    const selectedGender = searchParams.get('gender')?.split(',') || ['male', 'female'];
-
-    const handleAgeSelect = (value: number[]) => {
-        const params = new URLSearchParams(searchParams);
-        params.set('ageRange', value.join(','));
-        router.replace(`${pathname}?${params}`);
-    }
-
-    const handleOrderSelect = (value: Selection) => {
-        if (value instanceof Set) {
-            const selectedValue = value.values().next().value;
-            if (selectedValue !== undefined) {
-                const params = new URLSearchParams(searchParams);
-                params.set('orderBy', selectedValue.toString());
-                router.replace(`${pathname}?${params}`);
-            }
-        }
-    };
-
-    const handleGenderSelect = (value: string) => {
-        const params = new URLSearchParams(searchParams);
-        if (selectedGender.includes(value)) {
-            params.set('gender', selectedGender.filter(g => g !== value).toString())
-        } else {
-            params.set('gender', [...selectedGender, value].toString());
-        }
-        router.replace(`${pathname}?${params}`);
-    };
-
-
-    if (pathname !== '/members') return null;
+    const { gendersList, orderByList, filters, selectAge, selectGender,
+        selectOrder, isPending, totalCount, SelectWithPhoto } = useFilters();
 
     return (
         <div className='shadow-md py-2'>
             <div className='flex flex-row justify-around items-center'>
-                <div className='text-secondary font-semibold text-xl'>Result: 10</div>
+                <div className='flex gap-2 items-center'>
+                    <div className='text-secondary font-semibold text-xl'>
+                        Results: {isPending ? <Spinner size='sm' color='secondary' /> : totalCount}
+                    </div>
+                </div>
                 <div className='flex gap-2 items-center'>
                     <div>Gender:</div>
-                    {genders.map(({ icon: Icon, value }) => (
+                    {gendersList.map(({ icon: Icon, value }) => (
                         <Button
                             key={value}
                             size='sm'
                             isIconOnly
-                            color={selectedGender.includes(value) ? 'secondary' : 'default'}
-                            onClick={() => handleGenderSelect(value)}
+                            color={filters.gender.includes(value) ? 'secondary' : 'default'}
+                            onClick={() => selectGender(value)}
                         >
                             <Icon size={24} />
                         </Button>
@@ -77,8 +36,18 @@ export default function Filters() {
                         size='sm'
                         minValue={18}
                         maxValue={100}
-                        defaultValue={[18, 100]}
-                        onChangeEnd={(value) => handleAgeSelect(value as number[])}
+                        defaultValue={filters.ageRange}
+                        onChangeEnd={(value) => selectAge(value as number[])}
+                        aria-label='Age range slider'
+                    />
+                </div>
+                <div className='flex flex-col items-center'>
+                    <p className='text-sm'>With photo</p>
+                    <Switch
+                        color='secondary'
+                        defaultSelected
+                        size='sm'
+                        onChange={SelectWithPhoto}
                     />
                 </div>
                 <div className='w-1/4'>
@@ -89,8 +58,8 @@ export default function Filters() {
                         variant='bordered'
                         color='secondary'
                         aria-label='Order by selector'
-                        selectedKeys={new Set([searchParams.get('orderBy') || 'updated'])}
-                        onSelectionChange={handleOrderSelect}
+                        selectedKeys={new Set([filters.orderBy])}
+                        onSelectionChange={selectOrder}
                     >
                         {orderByList.map(item => (
                             <SelectItem key={item.value} value={item.value}>
