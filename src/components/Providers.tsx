@@ -10,9 +10,10 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import { useShallow } from 'zustand/react/shallow';
 
-export default function Providers({children, userId}: {children: ReactNode, userId: string | null}) {
+export default function Providers({ children, userId, profileComplete }:
+  { children: ReactNode, userId: string | null, profileComplete: boolean }) {
   const isUnreadCountSet = useRef(false);
-  const {updateUnreadCount} = useMessageStore(useShallow(state => ({
+  const { updateUnreadCount } = useMessageStore(useShallow(state => ({
     updateUnreadCount: state.updateUnreadCount
   })));
 
@@ -29,12 +30,12 @@ export default function Providers({children, userId}: {children: ReactNode, user
     }
   }, [setUnreadCount, userId])
 
-  usePresenceChannel();
-  useNotificationChannel(userId);
+  usePresenceChannel(userId, profileComplete);
+  useNotificationChannel(userId, profileComplete);
   return (
     <NextUIProvider>
       <ToastContainer position='bottom-right' hideProgressBar className='z-50' />
-        {children}
+      {children}
     </NextUIProvider>
   )
 }
