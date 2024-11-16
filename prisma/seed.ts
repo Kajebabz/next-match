@@ -10,7 +10,7 @@ async function seedMembers() {
             email: member.email,
             emailVerified: new Date(),
             name: member.name,
-            passwordHash: await hash('password', 10),
+            passwordHash: await hash('password1', 10),
             image: member.image,
             profileComplete: true,
             member: {
@@ -49,8 +49,10 @@ async function seedAdmin() {
 }
 
 async function main() {
-    await seedMembers();
-    await seedAdmin();
+    if (process.env.RUN_SEED === 'true' || process.env.NODE_ENV === 'development') {
+        await seedMembers();
+        await seedAdmin();
+    }
 }
 
 main().catch(e => {
