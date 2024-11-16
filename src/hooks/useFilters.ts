@@ -1,31 +1,36 @@
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { FaMale, FaFemale } from "react-icons/fa";
-import useFilterStore from "./useFilterStore";
-import { ChangeEvent, useEffect, useTransition } from "react";
-import { Selection } from "@nextui-org/react";
-import usePaginationStore from "./usePaginationStore";
-import { useShallow } from "zustand/react/shallow";
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect, useTransition, ChangeEvent } from 'react';
+import { FaMale, FaFemale } from 'react-icons/fa';
+import useFilterStore from './useFilterStore';
+import { Selection } from '@nextui-org/react';
+import usePaginationStore from './usePaginationStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export const useFilters = () => {
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const router = useRouter();
+    const [clientLoaded, setClientLoaded] = useState(false);
     const [isPending, startTransition] = useTransition();
 
-    const {filters, setFilters} = useFilterStore();
+    useEffect(() => {
+        setClientLoaded(true)
+    }, []);
 
-    const {pageNumber, pageSize, setPage, totalCount} = usePaginationStore(useShallow(state => ({
+    const { filters, setFilters } = useFilterStore();
+
+    const { pageNumber, pageSize, setPage, totalCount } = usePaginationStore(useShallow(state => ({
         pageNumber: state.pagination.pageNumber,
         pageSize: state.pagination.pageSize,
         setPage: state.setPage,
         totalCount: state.pagination.totalCount
     })))
 
-    const {gender, ageRange, orderBy, withPhoto} = filters;
+    const { gender, ageRange, orderBy, withPhoto } = filters;
 
     useEffect(() => {
         if (gender || ageRange || orderBy || withPhoto) {
-            setPage(1)
+            setPage(1);
         }
     }, [gender, ageRange, orderBy, setPage, withPhoto])
 
@@ -39,8 +44,8 @@ export const useFilters = () => {
             if (pageSize) searchParams.set('pageSize', pageSize.toString());
             if (pageNumber) searchParams.set('pageNumber', pageNumber.toString());
             searchParams.set('withPhoto', withPhoto.toString());
-    
-            router.replace(`${pathname}?${searchParams}`); 
+
+            router.replace(`${pathname}?${searchParams}`);
         })
     }, [ageRange, orderBy, gender, router, pathname, pageNumber, pageSize, withPhoto])
 
@@ -49,13 +54,13 @@ export const useFilters = () => {
         { label: 'Newest members', value: 'created' },
     ]
 
-    const gendersList = [
+    const genderList = [
         { value: 'male', icon: FaMale },
         { value: 'female', icon: FaFemale },
     ]
 
     const handleAgeSelect = (value: number[]) => {
-        setFilters('ageRange', value)
+        setFilters('ageRange', value);
     }
 
     const handleOrderSelect = (value: Selection) => {
@@ -64,21 +69,10 @@ export const useFilters = () => {
         }
     }
 
-    // const handleOrderSelect = (value: Selection) => {
-    //     if (value instanceof Set) {
-    //         const selectedValue = value.values().next().value;
-    //         if (selectedValue !== undefined) {
-    //             const params = new URLSearchParams(searchParams);
-    //             params.set('orderBy', selectedValue.toString());
-    //             router.replace(`${pathname}?${params}`);
-    //         }
-    //     }
-    // };
-
     const handleGenderSelect = (value: string) => {
         if (gender.includes(value)) setFilters('gender', gender.filter(g => g !== value));
         else setFilters('gender', [...gender, value]);
-    };
+    }
 
     const handleWithPhotoToggle = (e: ChangeEvent<HTMLInputElement>) => {
         setFilters('withPhoto', e.target.checked);
@@ -86,12 +80,13 @@ export const useFilters = () => {
 
     return {
         orderByList,
-        gendersList,
+        genderList,
         selectAge: handleAgeSelect,
         selectGender: handleGenderSelect,
         selectOrder: handleOrderSelect,
-        SelectWithPhoto: handleWithPhotoToggle,
+        selectWithPhoto: handleWithPhotoToggle,
         filters,
+        clientLoaded,
         isPending,
         totalCount
     }

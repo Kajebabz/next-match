@@ -4,8 +4,8 @@ import { useFilters } from '@/hooks/useFilters';
 import { Button, Select, SelectItem, Slider, Spinner, Switch } from '@nextui-org/react';
 
 export default function Filters() {
-    const { gendersList, orderByList, filters, selectAge, selectGender,
-        selectOrder, isPending, totalCount, SelectWithPhoto } = useFilters();
+    const { genderList, orderByList, filters, selectAge, selectGender,
+        selectOrder, clientLoaded, isPending, totalCount, selectWithPhoto } = useFilters();
 
     return (
         <div className='shadow-md py-2'>
@@ -14,10 +14,12 @@ export default function Filters() {
                     <div className='text-secondary font-semibold text-xl'>
                         Results: {isPending ? <Spinner size='sm' color='secondary' /> : totalCount}
                     </div>
+                    
                 </div>
+
                 <div className='flex gap-2 items-center'>
                     <div>Gender:</div>
-                    {gendersList.map(({ icon: Icon, value }) => (
+                    {genderList.map(({ icon: Icon, value }) => (
                         <Button
                             key={value}
                             size='sm'
@@ -31,7 +33,7 @@ export default function Filters() {
                 </div>
                 <div className='flex flex-row items-center gap-2 w-1/4'>
                     <Slider
-                        label='Age range'
+                        label={clientLoaded && 'Age range'}
                         color='secondary'
                         size='sm'
                         minValue={18}
@@ -43,11 +45,11 @@ export default function Filters() {
                 </div>
                 <div className='flex flex-col items-center'>
                     <p className='text-sm'>With photo</p>
-                    <Switch
-                        color='secondary'
-                        defaultSelected
-                        size='sm'
-                        onChange={SelectWithPhoto}
+                    <Switch 
+                        color='secondary' 
+                        defaultSelected 
+                        size="sm"
+                        onChange={selectWithPhoto} 
                     />
                 </div>
                 <div className='w-1/4'>

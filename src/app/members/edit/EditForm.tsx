@@ -1,9 +1,8 @@
 'use client';
 
 import { updateMemberProfile } from '@/app/actions/userActions';
-import { MemberEditSchema, memberEditSchema } from '@/lib/schemas/memberEditSchema';
+import { MemberEditSchema } from '@/lib/schemas/memberEditSchema';
 import { handleFormServerErrors } from '@/lib/util';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Input, Textarea } from '@nextui-org/react';
 import { Member } from '@prisma/client'
 import { useRouter } from 'next/navigation';

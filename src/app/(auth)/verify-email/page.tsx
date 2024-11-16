@@ -5,8 +5,9 @@ import { Spinner } from '@nextui-org/react';
 import React from 'react'
 import { MdOutlineMailOutline } from 'react-icons/md';
 
-export default async function VerifyEmailPage({ searchParams }: { searchParams: { token: string } }) {
-    const result = await verifyEmail(searchParams.token);
+export default async function VerifyEmailPage({ searchParams }: { searchParams: Promise<{ token: string; }> }) {
+    const resolvedSearchParams = await searchParams;
+    const result = await verifyEmail(resolvedSearchParams.token);
 
     return (
         <CardWrapper
