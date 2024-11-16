@@ -35,12 +35,10 @@ export const usePresenceChannel = (userId: string | null, profileComplete: boole
                 await updateLastActive();
             });
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             channelRef.current.bind('pusher:member_added', (member: Record<string, any>) => {
                 handleAddMember(member.id);
             });
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             channelRef.current.bind('pusher:member_removed', (member: Record<string, any>) => {
                 handleRemoveMember(member.id);
             });

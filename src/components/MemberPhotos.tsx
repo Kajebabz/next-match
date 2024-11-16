@@ -29,7 +29,6 @@ export default function MemberPhotos({ photos, editing, mainImageUrl }: Props) {
         try {
             await setMainImage(photo);
             router.refresh();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             toast.error(error.message);
         } finally {

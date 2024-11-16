@@ -27,7 +27,6 @@ export default function MemberImage({ photo }: Props) {
         try {
             await approvePhoto(photoId);
             router.refresh();
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             toast.error(error.message);
         }
@@ -37,7 +36,6 @@ export default function MemberImage({ photo }: Props) {
         try {
             await rejectPhoto(photo);
             router.refresh();
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             toast.error(error.message);
         }

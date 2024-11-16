@@ -4,7 +4,6 @@ import { devtools } from "zustand/middleware";
 
 type FilterState = {
     filters: UserFilters;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setFilters: (filterName: keyof FilterState['filters'], value: any) => void;
 }
 
